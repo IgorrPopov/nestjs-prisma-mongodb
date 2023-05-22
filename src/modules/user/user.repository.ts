@@ -43,6 +43,15 @@ export class UserRepository {
   }
 
   /**
+   * @desc Update a user
+   * @param data Prisma.UserUpdateInput
+   * @returns Promise<User>
+   */
+  async updateOne(args: Prisma.UserUpdateArgs): Promise<User> {
+    return this.prisma.user.update(args);
+  }
+
+  /**
    * @desc Find all users with pagination
    * @param where Prisma.UserWhereInput
    * @param orderBy Prisma.UserOrderByWithRelationInput

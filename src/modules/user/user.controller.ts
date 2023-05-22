@@ -1,6 +1,21 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import ApiBaseResponses from '@decorators/api-base-response.decorator';
 import {
   AccessGuard,
@@ -15,6 +30,7 @@ import { OrderByPipe, WherePipe } from '@nodeteam/nestjs-pipes';
 import { Prisma, User } from '@prisma/client';
 import { PaginatorTypes } from '@nodeteam/nestjs-prisma-pagination';
 import UserBaseEntity from '@modules/user/entities/user-base.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -41,9 +57,39 @@ export class UserController {
   @UseGuards(AccessGuard)
   @Serialize(UserBaseEntity)
   @UseAbility(Actions.read, UserEntity)
-  async me(@CaslUser() userProxy?: UserProxy<User>): Promise<User> {
+  async find(@CaslUser() userProxy?: UserProxy<User>): Promise<User> {
     const tokenUser = await userProxy.get();
 
-    return this.userService.findOne(tokenUser.id);
+    return this.userService.findOne(tokenUser.userId);
+  }
+
+  @Patch()
+  @ApiBody({ type: UpdateUserDto })
+  @UseGuards(AccessGuard)
+  @Serialize(UserBaseEntity)
+  @UseAbility(Actions.update, UserEntity)
+  async update(
+    @Body() data: UpdateUserDto,
+    @CaslUser() userProxy: UserProxy<User>,
+  ) {
+    const { userId } = await userProxy.get();
+
+    return this.userService.updateOne(userId, data);
+  }
+
+  @Patch(':userId')
+  @ApiBody({ type: UpdateUserDto })
+  @ApiParam({ name: 'userId', required: false, type: 'string' })
+  @UseGuards(AccessGuard)
+  @Serialize(UserBaseEntity)
+  @UseAbility(Actions.update, UserEntity)
+  async updateById(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Body() data: UpdateUserDto,
+    @CaslUser() userProxy: UserProxy<User>,
+  ) {
+    const tokenUser = await userProxy.get();
+
+    return this.userService.updateOne(userId, data);
   }
 }

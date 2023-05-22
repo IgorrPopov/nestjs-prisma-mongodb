@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from '@modules/user/user.repository';
 import { Prisma, User } from '@prisma/client';
 import { PaginatorTypes } from '@nodeteam/nestjs-prisma-pagination';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -9,12 +10,12 @@ export class UserService {
 
   /**
    * @desc Find a user by id
-   * @param id
+   * @param userId
    * @returns Promise<User>
    */
-  findOne(id: string): Promise<User> {
+  findOne(userId: string): Promise<User> {
     return this.userRepository.findOne({
-      where: { id },
+      where: { userId },
     });
   }
 
@@ -28,5 +29,14 @@ export class UserService {
     orderBy: Prisma.UserOrderByWithRelationInput,
   ): Promise<PaginatorTypes.PaginatedResult<User>> {
     return this.userRepository.findAll(where, orderBy);
+  }
+
+  /**
+   * @desc Update a user
+   * @param data Prisma.UserUpdateInput
+   * @returns Promise<User>
+   */
+  updateOne(userId: string, data: UpdateUserDto): Promise<User> {
+    return this.userRepository.updateOne({ where: { userId }, data });
   }
 }

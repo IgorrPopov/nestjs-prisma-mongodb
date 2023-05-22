@@ -226,7 +226,7 @@ export const permissions: Permissions<Roles, Subjects, Actions> = {
   },
 
   customer({ user, can }) {
-    can(Actions.update, Post, { userId: user.id });
+    can(Actions.update, Post, { userId: user.userId });
   },
 
   operator({ can, cannot, extend }) {
@@ -288,7 +288,7 @@ export class UserHook implements UserBeforeFilterHook<User> {
   async run(user: User) {
     return {
       ...user,
-      ...(await this.userService.findById(user.id)),
+      ...(await this.userService.findById(user.userId)),
     };
   }
 }
@@ -355,7 +355,7 @@ import { CaslModule } from 'nest-casl';
       getUserHook: [
         UserService,
         async (service: UserService, user) => {
-          return service.findById(user.id);
+          return service.findById(user.userId);
         },
       ],
     }),
@@ -384,7 +384,7 @@ For example, if you have User with numeric id and current user assigned to `requ
 
 ```typescript
 class User implements AuthorizableUser<Roles, number> {
-  id: number;
+  userId: number;
   roles: Array<Roles>;
 }
 
@@ -402,7 +402,7 @@ interface CustomAuthorizableRequest {
       getUserHook: [
         UserService,
         async (service: UserService, user) => {
-          return service.findById(user.id);
+          return service.findById(user.userId);
         },
       ],
     }),

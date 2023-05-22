@@ -1,59 +1,55 @@
-version: '3.7'
-
+version: "3"
 services:
-  mongo0:
-    hostname: mongo0
-    container_name: mongo0
-    image: mongo:latest
-    expose:
-      - 30000
+  postgres:
+    container_name: postgres
+    image: postgres:15.1
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - 30000:30000
+      - "5432:5432"
     volumes:
-      - 'mongodb_repl_data1:/data/db:z'
-    restart: always
-    command: "--bind_ip_all --replSet rs0 --port 30000"
-  mongo1:
-      hostname: mongo1
-      container_name: mongo1
-      image: mongo:latest
-      expose:
-        - 30001
-      ports:
-        - 30001:30001
-      volumes:
-        - 'mongodb_repl_data2:/data/db:z'
-      restart: always
-      command: "--bind_ip_all --replSet rs0 --port 30001"
-  mongo2:
-      hostname: mongo2
-      container_name: mongo2
-      image: mongo:latest
-      expose:
-        - 30002
-      ports:
-        - 30002:30002
-      volumes:
-        - 'mongodb_repl_data3:/data/db:z'
-      restart: always
-      command: "--bind_ip_all --replSet rs0 --port 30002"
-  redis-starter:
-    image: 'docker.io/bitnami/redis:6.0-debian-10'
-    container_name: redis-starter
+      - db_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6
+    container_name: redis
     restart: always
     environment:
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-    command: /bin/sh -c "redis-server --requirepass ${REDIS_PASSWORD}"
     ports:
-      - '6379:6379'
-    volumes:
-      - 'redis_data:/bitnami/redis-starter/data'
+      - "6379:6379"
+
+  # adminer:
+  #   image: adminer
+  #   environment:
+  #     ADMINER_DEFAULT_SERVER: postgres
+  #   ports:
+  #     - 8091:8080
+
+  # mailhog:
+  #   image: mailhog/mailhog
+  #   logging:
+  #     driver: 'none'
+  #   ports:
+  #     - 1025:1025 # smtp server
+  #     - 8025:8025 # web ui
+
+  # minio:
+  #   image: minio/minio
+  #   ports:
+  #     - "9000:9000"
+  #     - "9001:9001"
+  #   volumes:
+  #     - minio_storage:/data
+  #   environment:
+  #     MINIO_ROOT_USER: masoud
+  #     MINIO_ROOT_PASSWORD: Strong#Pass#2022
+  #   command: server --console-address ":9001" /data
+
 volumes:
-  mongodb_repl_data1:
-    external: true
-  mongodb_repl_data2:
-    external: true
-  mongodb_repl_data3:
-    external: true
+  # minio_storage: {}
+  db_data:
   redis_data:
     driver: local

@@ -54,9 +54,10 @@ export class AuthService {
         email: signInDto.email,
       },
       select: {
-        id: true,
+        userId: true,
         email: true,
         password: true,
+        roles: true,
       },
     });
 
@@ -76,8 +77,9 @@ export class AuthService {
     }
 
     return this.tokenService.sign({
-      id: testUser.id,
+      userId: testUser.userId,
       email: testUser.email,
+      roles: testUser.roles,
     });
   }
 }

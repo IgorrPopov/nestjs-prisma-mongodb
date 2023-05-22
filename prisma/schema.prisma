@@ -1,25 +1,48 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @id @default(uuid()) @db.Uuid
   email     String   @unique
   phone     String?
   firstName String?
   lastName  String?
+  language  LanguagesEnum  @default(EN)
   password  String
   roles     Roles[]  @default([CUSTOMER])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+
+  posts Post[]
+
+  @@map("users")
+}
+
+model Post {
+  postId   String   @id @default(uuid()) @db.Uuid
+  text     String
+  author   User @relation(fields: [authorId], references: [userId])
+  authorId String  @db.Uuid
+
+  @@map("posts")
 }
 
 enum Roles {
   ADMIN
   CUSTOMER
+
+  @@map("roles_enum")
+}
+
+enum LanguagesEnum {
+  EN
+  
+  @@map("languages_enum")
 }

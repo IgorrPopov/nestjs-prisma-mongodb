@@ -2,12 +2,13 @@ import { Exclude, Expose } from 'class-transformer';
 
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import UserEntity from '@modules/user/entities/user.entity';
+import { LanguagesEnum } from '@prisma/client';
 
 @Exclude()
 export default class UserBaseEntity extends PartialType(UserEntity) {
   @ApiProperty({ type: String })
   @Expose()
-  declare readonly id: string;
+  declare readonly userId: string;
 
   @ApiProperty({ type: String, maxLength: 18 })
   @Expose()
@@ -32,4 +33,8 @@ export default class UserBaseEntity extends PartialType(UserEntity) {
   @ApiProperty({ type: Boolean })
   @Expose()
   declare readonly isVerified: boolean;
+
+  @ApiProperty({ type: String, example: LanguagesEnum.EN })
+  @Expose()
+  declare readonly language: LanguagesEnum;
 }

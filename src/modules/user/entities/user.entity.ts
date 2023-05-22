@@ -1,8 +1,8 @@
-import { User } from '@prisma/client';
+import { LanguagesEnum, User } from '@prisma/client';
 import { Roles } from '@modules/app/app.roles';
 
 export default class UserEntity implements User {
-  readonly id!: string;
+  readonly userId!: string;
 
   readonly phone!: string | null;
 
@@ -21,4 +21,6 @@ export default class UserEntity implements User {
   readonly updatedAt!: Date;
 
   readonly isVerified!: boolean;
+
+  readonly language!: LanguagesEnum;
 }

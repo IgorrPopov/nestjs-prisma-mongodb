@@ -12,7 +12,14 @@ export const permissions: Permissions<Roles, Subjects, Actions> = {
     can(Actions.create, UserEntity);
   },
 
-  CUSTOMER({ user, can }) {
-    can(Actions.update, UserEntity, { userId: user.id });
+  CUSTOMER({ user: { userId }, cannot, can }) {
+    // cannot(Actions.update, UserEntity);
+    // can(Actions.update, UserEntity);
+
+    can(Actions.update, UserEntity, { userId });
+  },
+
+  ADMIN({ can }) {
+    can(Actions.update, UserEntity);
   },
 };
